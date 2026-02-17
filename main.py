@@ -2,24 +2,26 @@ from collections import UserDict
 
 
 class Field:  # Базовий клас для полів запису (ім'я, телефон і т.д.)
-    def __init__(self, value):
-        self.value = value
+    def __init__(self, value: str):
+        self.value = value  # зберігаємо значення поля
 
-    def __str__(self):
-        return str(self.value)
+    def __str__(self) -> str:
+        return str(self.value)  # рядкове представлення поля
 
 
 class Name(Field):  # Клас для зберігання імені контакту
-    pass  # Логіка додаткової обробки не потрібна, просто зберігає значення
+    pass  # без додаткової логіки, просто зберігає значення Name
 
 
 class Phone(Field):  # Клас для зберігання номера телефону з валідацією
     def __init__(self, value: str):
         super().__init__(value)
 
-        # Залишаємо лише цифри
+        # Видаляємо всі небуквені символи, залишаємо лише цифри
         phone = ''.join(i for i in self.value if i.isdigit())
-        if len(phone) == 10:  # перевірка довжини номера
+
+        # Перевірка коректності номера: повинен містити рівно 10 цифр
+        if len(phone) == 10:
             self.value = phone
         else:
             raise ValueError(f"Phone number '{self.value}' is not valid")
@@ -27,19 +29,19 @@ class Phone(Field):  # Клас для зберігання номера тел�
 
 class Record:  # Клас для зберігання інформації про контакт
     def __init__(self, name: str):
-        self.name = Name(name)  # обов'язкове поле
-        self.phones = []  # список телефонів
+        self.name = Name(name)  # обов'язкове поле, ім'я контакту
+        self.phones: list[str] = []  # список телефонів контакту
 
-    # Валідація номера через створення об'єкта Phone
+    # Технічний метод: створює об'єкт Phone для валідації номера
     def __validate_phone(self, value: str) -> str:
-        phone = Phone(value)
+        phone = Phone(value)  # якщо номер некоректний — викликає ValueError
         return phone.value
 
-    # Додає телефон до запису
+    # Додає новий телефон до запису
     def add_phone(self, value: str) -> None:
         self.phones.append(self.__validate_phone(value))
 
-    # Видаляє телефон із запису
+    # Видаляє телефон зі списку контактів, якщо він існує
     def remove_phone(self, value: str) -> None:
         phone_del = self.__validate_phone(value)
         if phone_del in self.phones:
@@ -52,31 +54,39 @@ class Record:  # Клас для зберігання інформації пр�
         if old_phone in self.phones:
             self.phones[self.phones.index(old_phone)] = new_phone
         else:
+            # Технічне повідомлення про відсутність номера
             raise ValueError(f"The phone number '{old_phone}' is not in the contact's phone list")
 
-    def find_phone(self, value) -> str | None:
+    # Пошук телефону у списку контактів
+    def find_phone(self, value: str) -> str | None:
+        """Повертає знайдений номер, або None, якщо не існує"""
         if value in self.phones:
             return value
         return None
 
     def __str__(self) -> str:
-        # Красивий друк контактів із усіма телефонами
-        return f"Contact name: {self.name.value}, phones: {', '.join(p for p in self.phones)}"
+        # Рядкове представлення контакту із усіма телефонами
+        return f"Contact name: {self.name.value}, phones: {', '.join(self.phones)}"
 
 
 class AddressBook(UserDict):  # Клас для зберігання та управління записами
+    # Додає Record у AddressBook; ключ — ім'я контакту
     def add_record(self, value: Record):
-        # Зберігаємо об'єкт Record, ключ — ім'я контакту
         self.data[value.name.value] = value
 
-    def find(self, value) -> Record:
+    # Повертає Record по імені контакту
+    def find(self, value: str) -> Record:
         return self.data[value]
 
-    def delete(self, value) -> None:
+    # Видаляє Record за іменем, якщо існує
+    def delete(self, value: str) -> None:
         if value in self.data:
             del self.data[value]
-        raise ValueError(f"Name {value} is not found")
+        else:
+            # Технічне повідомлення про відсутній контакт
+            raise ValueError(f"Name '{value}' is not found in AddressBook")
 
-    def __str__(self):
-        # Красивий друк усіх записів через __str__ Record
+    def __str__(self) -> str:
+        # Красивий друк всіх контактів у AddressBook
+        # Використовує __str__ Record
         return '\n'.join(str(v) for v in self.data.values())
