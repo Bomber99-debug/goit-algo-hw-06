@@ -1,5 +1,4 @@
 from collections import UserDict
-from dbm import error
 
 
 class Field:  # Базовий клас для полів запису (ім'я, телефон і т.д.)
