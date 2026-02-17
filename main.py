@@ -26,12 +26,12 @@ class Phone(Field):  # Клас для зберігання номера тел�
 
 
 class Record:  # Клас для зберігання інформації про контакт
-    def __init__(self, name):
+    def __init__(self, name: str):
         self.name = Name(name)  # обов'язкове поле
         self.phones = []  # список телефонів
 
     # Валідація номера через створення об'єкта Phone
-    def __validate_phone(self, value: str) -> str | None:
+    def __validate_phone(self, value: str) -> str:
         phone = Phone(value)
         return phone.value
 
@@ -52,9 +52,9 @@ class Record:  # Клас для зберігання інформації пр�
         if old_phone in self.phones:
             self.phones[self.phones.index(old_phone)] = new_phone
         else:
-            raise ValueError(f"Phone number '{self.old_phone}' is not in phone list")
+            raise ValueError(f"The phone number '{old_phone}' is not in the contact's phone list")
 
-    def find_phone(self, value) -> object:
+    def find_phone(self, value) -> str | None:
         if value in self.phones:
             return value
         return None
@@ -69,11 +69,13 @@ class AddressBook(UserDict):  # Клас для зберігання та упр
         # Зберігаємо об'єкт Record, ключ — ім'я контакту
         self.data[value.name.value] = value
 
-    def find(self, value) -> str:
+    def find(self, value) -> Record:
         return self.data[value]
 
     def delete(self, value) -> None:
-        del self.data[value]
+        if value in self.data:
+            del self.data[value]
+        raise ValueError(f"Name {value} is not found")
 
     def __str__(self):
         # Красивий друк усіх записів через __str__ Record
