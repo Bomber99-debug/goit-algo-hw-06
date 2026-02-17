@@ -47,11 +47,18 @@ class Record:  # Клас для зберігання інформації пр�
             self.phones.remove(phone_del)
 
     # Замінює старий телефон на новий
-    def find_phone(self, value: str, replace: str) -> None:
+    def edit_phone(self, value: str, replace: str) -> None:
         old_phone = self.__validate_phone(value)
         new_phone = self.__validate_phone(replace)
         if old_phone in self.phones:
             self.phones[self.phones.index(old_phone)] = new_phone
+        else:
+            raise ValueError(f"Phone number '{self.old_phone}' is not in phone list")
+
+    def find_phone(self, value) -> object:
+        if value in self.phones:
+            return value
+        return None
 
     def __str__(self) -> str:
         # Красивий друк контактів із усіма телефонами
@@ -63,6 +70,45 @@ class AddressBook(UserDict):  # Клас для зберігання та упр
         # Зберігаємо об'єкт Record, ключ — ім'я контакту
         self.data[value.name.value] = value
 
+    def find(self, value) -> str:
+        return self.data[value]
+
+    def delete(self, value) -> None:
+        del self.data[value]
+
     def __str__(self):
         # Красивий друк усіх записів через __str__ Record
         return '\n'.join(str(v) for v in self.data.values())
+
+# Створення нової адресної книги
+book = AddressBook()
+
+# Створення запису для John
+john_record = Record("John")
+john_record.add_phone("1234567890")
+john_record.add_phone("5555555555")
+
+# Додавання запису John до адресної книги
+book.add_record(john_record)
+
+# Створення та додавання нового запису для Jane
+jane_record = Record("Jane")
+jane_record.add_phone("9876543210")
+book.add_record(jane_record)
+
+# Виведення всіх записів у книзі
+
+print(book)
+
+# Знаходження та редагування телефону для John
+john = book.find("John")
+john.edit_phone("1234567890", "1112223333")
+
+print(john)  # Виведення: Contact name: John, phones: 1112223333; 5555555555
+
+# Пошук конкретного телефону у записі John
+found_phone = john.find_phone("5555555555")
+print(f"{john.name}: {found_phone}")  # Виведення: John: 5555555555
+
+# Видалення запису Jane
+book.delete("Jane")
