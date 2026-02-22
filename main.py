@@ -45,7 +45,7 @@ class Record:
             self.phones.remove(value)
 
     def edit_phone(self, value: str, replace: str) -> None:
-        """Замінює що існує телефон на новий."""
+        """Замінює телефон що існує на новий."""
         phone_obj = self.find_phone(value)
         if phone_obj:
             self.remove_phone(phone_obj)
