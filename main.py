@@ -21,7 +21,7 @@ class Phone(Field):
 
     def __init__(self, value: str):
         # Перевірка: номер має містити рівно 10 цифр
-        if len(value) != 10 and not value.isdigit():
+        if len(value) != 10 or not value.isdigit():
             raise ValueError(f"Phone number '{self.value}' is not valid")
         super().__init__(value)
 
