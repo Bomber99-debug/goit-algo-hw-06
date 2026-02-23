@@ -48,8 +48,8 @@ class Record:
         """Замінює телефон що існує на новий."""
         phone_obj = self.find_phone(value)
         if phone_obj:
-            self.remove_phone(phone_obj)
             self.add_phone(replace)
+            self.remove_phone(phone_obj)
         else:
             raise ValueError(f"The phone number '{value}' is not in the contact's phone list")
 
